@@ -636,10 +636,10 @@ span.h-in{display:inline-block}
 .slider .l{display:flex;justify-content:space-between;font-size:.86rem;font-weight:600;color:var(--ink)}
 .slider .l output{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--c);font-variant-numeric:tabular-nums}
 .slider input[type=range]{width:100%;accent-color:var(--c);height:28px;cursor:pointer}
-.lab-formula{font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--muted);padding:12px 14px;border-radius:8px;background:color-mix(in srgb,var(--c) 10%,transparent);border-left:3px solid var(--c);line-height:1.5;white-space:pre-line}
-.lab-view{padding:22px;display:grid;align-content:center;position:relative;min-width:0}
+.lab-formula{font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--muted);padding:12px 14px;border-radius:8px;background:color-mix(in srgb,var(--c) 10%,transparent);border-left:3px solid var(--c);line-height:1.5;white-space:pre-wrap}
+.lab-view{padding:22px;display:grid;gap:10px;align-content:start;position:relative;min-width:0}
 .lab-view canvas{width:100%;height:auto;display:block;border-radius:10px}
-.lab-view .cap{position:absolute;left:30px;top:26px;font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lab-view .cap{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .lab-out .h{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
 .lab-out .h i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);animation:blink 1.6s infinite}
 .lab-out pre{margin:0;font-family:"IBM Plex Mono",monospace;font-size:.82rem;line-height:1.7;color:var(--text);background:var(--hero-bg);border-radius:10px;padding:16px;white-space:pre-wrap;overflow-x:auto;min-height:150px}
@@ -650,7 +650,7 @@ span.h-in{display:inline-block}
 .lab-out .note em{color:var(--c);font-style:normal;font-weight:600}
 .lab-out .btn{justify-self:stretch;background:var(--c);border-color:var(--c);color:#fff;box-shadow:0 10px 30px -12px var(--c)}
 @media (max-width:1040px){.lab{grid-template-columns:260px 1fr}.lab-out{grid-column:1/-1;border-left:0;border-top:1.5px solid var(--line)}}
-@media (max-width:700px){.lab{grid-template-columns:1fr}.lab-ctrl{border-right:0;border-bottom:1.5px solid var(--line)}}
+@media (max-width:700px){.lab{grid-template-columns:1fr}.lab-ctrl{border-right:0;border-bottom:1.5px solid var(--line)}.lab-view{padding:14px}.lab-ctrl,.lab-out{padding:20px}.slider .l{flex-wrap:wrap;gap:2px 10px}.slider .l output{font-size:.8rem}.lab-out pre{font-size:.78rem}}
 
 /* =========================================================
    MARCA NOXIS
@@ -1441,7 +1441,7 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
     if (ymin <= 0 && ymax >= 0){ ctx.beginPath(); ctx.moveTo(P.l, Y(0)); ctx.lineTo(W - P.r, Y(0)); ctx.stroke(); }
     if (xmin <= 0 && xmax >= 0){ ctx.beginPath(); ctx.moveTo(X(0), P.t); ctx.lineTo(X(0), H - P.b); ctx.stroke(); }
     if (opt.xl){ ctx.textAlign = "right"; ctx.fillStyle = t.muted; ctx.fillText(opt.xl, W - P.r, H - 6); }
-    if (opt.yl){ ctx.textAlign = "left"; ctx.fillText(opt.yl, P.l + 4, P.t - 6 + 8); }
+    if (opt.yl){ ctx.textAlign = "left"; ctx.fillText(opt.yl, P.l + 8, P.t + 12); }
     return { X, Y, P };
   }
   function curve(ctx, m, f, x0, x1, color, w = 2.5){
@@ -1491,11 +1491,11 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
       desc: "Arma una pila galvánica con dos metales. El de menor potencial de reducción cede electrones (ánodo) y el de mayor potencial los recibe (cátodo).",
       formula: "E°celda = E°cátodo − E°ánodo\nÁnodo: M → Mⁿ⁺ + n e⁻  (oxidación)\nCátodo: Mⁿ⁺ + n e⁻ → M  (reducción)", cap: "Pila galvánica · 25 °C · 1 mol/L", anim: true,
       sliders: [{ id: "m1", label: "Electrodo izquierdo", min: 0, max: 7, step: 1, val: 2, unit: "", fmt: v => METALS[v].n }, { id: "m2", label: "Electrodo derecho", min: 0, max: 7, step: 1, val: 6, unit: "", fmt: v => METALS[v].n }],
-      draw(ctx, W, H, v, t, c){
+      draw(ctx, W, H, v, t, c, narrow){
         const A = METALS[v.m1], B = METALS[v.m2], E = B.e - A.e, same = v.m1 === v.m2;
         const leftAn = E >= 0;
-        const bw = Math.min(200, W * .3), y0 = H * .5, y1 = H * .93, xA = W * .26 - bw / 2, xB = W * .74 - bw / 2;
-        const R = Math.min(44, H * .12), gy = R + 8, cxm = W / 2;
+        const bw = Math.min(200, W * (narrow ? .36 : .3)), y0 = H * (narrow ? .52 : .5), y1 = H * .93, xA = W * .25 - bw / 2, xB = W * .75 - bw / 2;
+        const R = Math.min(44, H * .12, W * .1), gy = R + 8, cxm = W / 2;
         if (!redox.ions) redox.ions = Array.from({ length: 16 }, (_, k) => ({ x: Math.random(), y: Math.random(), s: .3 + Math.random() * .7, side: k % 2 }));
         const glass = t.muted, tint = "rgba(255,255,255,.06)";
         const beaker = (x, M, role) => {
@@ -1551,11 +1551,13 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
         }
         const bg = t.paper, bd = t.line;
         pill(ctx, `${fmt(Math.abs(E))} V`, cxm, gy - R * .25, { fg: t.text, bg, font: `bold ${Math.round(R * .34)}px 'IBM Plex Mono', monospace`, h: R * .5 });
-        pill(ctx, "puente salino", cxm, ptop + 24, { fg: t.muted, bg, border: bd });
-        if (!same) pill(ctx, leftAn ? "flujo de e⁻  →" : "←  flujo de e⁻", cxm + (leftAn ? -1 : 1) * (W * .2), gy - 18, { fg: t.amber, bg, border: bd });
+        pill(ctx, "puente salino", cxm, ptop + 24, { fg: t.muted, bg, border: bd, font: narrow ? "10px 'IBM Plex Mono', monospace" : undefined, h: narrow ? 18 : 22 });
+        if (!same) pill(ctx, leftAn ? "flujo de e⁻  →" : "←  flujo de e⁻", narrow ? cxm : cxm + (leftAn ? -1 : 1) * (W * .2), narrow ? gy + R + 14 : gy - 18, { fg: t.amber, bg, border: bd, font: narrow ? "11px 'IBM Plex Mono', monospace" : undefined });
         const lab = (x, M, role) => {
-          pill(ctx, `${M.n}  |  ${M.n}${M.ion}`, x + bw / 2, y1 + 18, { fg: t.text, bg, border: bd, font: "bold 13px 'IBM Plex Mono', monospace", h: 24 });
-          pill(ctx, same ? "sin reacción neta" : role === "an" ? "ÁNODO (−) · oxidación" : "CÁTODO (+) · reducción", x + bw / 2, y0 - 52, { fg: role === "an" ? t.amber : c, bg, border: bd });
+          pill(ctx, `${M.n} | ${M.n}${M.ion}`, x + bw / 2, y1 + 16, { fg: t.text, bg, border: bd, font: `bold ${narrow ? 12 : 13}px 'IBM Plex Mono', monospace`, h: 24 });
+          const txt = same ? "sin reacción" : narrow ? (role === "an" ? "ÁNODO (−)" : "CÁTODO (+)") : (role === "an" ? "ÁNODO (−) · oxidación" : "CÁTODO (+) · reducción");
+          pill(ctx, txt, x + bw / 2, y0 - 52, { fg: role === "an" ? t.amber : c, bg, border: bd, font: narrow ? "11px 'IBM Plex Mono', monospace" : undefined });
+          if (narrow && !same) pill(ctx, role === "an" ? "oxidación" : "reducción", x + bw / 2, y0 - 30, { fg: t.muted, bg, font: "10px 'IBM Plex Mono', monospace", h: 18 });
         };
         lab(xA, A, leftAn ? "an" : "cat"); lab(xB, B, leftAn ? "cat" : "an");
       },
@@ -1566,11 +1568,11 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
 
     { key: "bi", sym: "Bi", name: "Biología", kicker: "Leyes de Mendel", title: "¿De qué color tendrán los <span>ojos</span> los hijos?",
       desc: "Ana y Luis van a tener hijos. Madre y padre son los dos progenitores: cada uno guarda dos alelos del gen del color de ojos y pasa uno, al azar, a cada hijo. B (marrón) domina sobre b (azul).",
-      formula: "Cada progenitor aporta 1 alelo\nMarrón si hay al menos una B (BB o Bb)\nAzul solo con bb\nBb × Bb → 3 marrón : 1 azul", cap: "Cuadro de Punnett · color de ojos",
+      formula: "Cada progenitor aporta 1 alelo\nMarrón si hay al menos una B (BB o Bb)\nAzul solo con bb\nBb × Bb → 3 marrón : 1 azul", cap: "Cuadro de Punnett · color de ojos", mobileAspect: 1.65,
       sliders: [{ id: "p1", label: "Madre · Ana", min: 0, max: 2, step: 1, val: 1, unit: "", fmt: v => GENO_L[v] }, { id: "p2", label: "Padre · Luis", min: 0, max: 2, step: 1, val: 1, unit: "", fmt: v => GENO_L[v] }, { id: "N", label: "Hijos simulados", min: 4, max: 120, step: 4, val: 48, unit: "" }],
-      draw(ctx, W, H, v, t, c){
+      draw(ctx, W, H, v, t, c, narrow){
         const g1 = GENO[v.p1].split(""), g2 = GENO[v.p2].split("");
-        const S = Math.min(H * .58, W * .36), cell = S / 2, ox = 112, oy = 96;
+        const S = narrow ? Math.min(W - 110, H * .42) : Math.min(H * .58, W * .36), cell = S / 2, ox = narrow ? 92 : 112, oy = 96;
         const brown = "brown", blue = "blue", pheno = gen => gen.includes("B") ? brown : blue;
         const key = (a, b) => a === "B" && b === "B" ? "BB" : a === "b" && b === "b" ? "bb" : "Bb";
         const counts = { BB: 0, Bb: 0, bb: 0 };
@@ -1581,24 +1583,24 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
           ctx.strokeStyle = t.line; ctx.lineWidth = 1.5; rrect(ctx, x + 3, y + 3, cell - 6, cell - 6, 10); ctx.stroke();
           eye(ctx, x + cell / 2, y + cell / 2 - 8, cell * .62, ph, t);
         }));
-        const px = ox + S + 36, pw = W - px - 12, n = v.N, area = (H - 100) * pw;
-        const ew = Math.max(18, Math.min(44, Math.sqrt(area / n) * .9)), cols = Math.max(1, Math.floor(pw / (ew * 1.1)));
+        const px = narrow ? 14 : ox + S + 36, pw = narrow ? W - 28 : W - px - 12, top = narrow ? oy + S + 64 : 76, n = v.N, area = (H - top - 20) * pw;
+        const ew = Math.max(16, Math.min(44, Math.sqrt(area / n) * .9)), cols = Math.max(1, Math.floor(pw / (ew * 1.1)));
         const nBrown = Math.round(n * (4 - counts.bb) / 4);
         const order = []; for (let k = 0; k < n; k++) order.push(k < nBrown ? brown : blue);
         for (let k = n - 1; k > 0; k--){ const r = (k * 7919 + 13) % (k + 1); [order[k], order[r]] = [order[r], order[k]]; }
-        order.forEach((ph, k) => { const cx = px + (k % cols) * ew * 1.1 + ew / 2, cy = 76 + Math.floor(k / cols) * ew * .82 + ew / 2; if (cy < H - 20) eye(ctx, cx, cy, ew, ph, t); });
+        order.forEach((ph, k) => { const cx = px + (k % cols) * ew * 1.1 + ew / 2, cy = top + Math.floor(k / cols) * ew * .82 + ew / 2; if (cy < H - 12) eye(ctx, cx, cy, ew, ph, t); });
         const bg = t.paper, bd = t.line;
         g2.forEach((a, k) => pill(ctx, a, ox + cell * k + cell / 2, oy - 16, { fg: t.text, bg, border: bd, font: "bold 14px 'IBM Plex Mono', monospace" }));
         g1.forEach((a, k) => pill(ctx, a, ox - 22, oy + cell * k + cell / 2, { fg: t.text, bg, border: bd, font: "bold 14px 'IBM Plex Mono', monospace" }));
         // progenitores: ojo + nombre
         eye(ctx, ox + 26, 34, 46, pheno(GENO[v.p2]), t);
-        pill(ctx, `Padre · Luis · ${GENO[v.p2]}`, ox + 26 + 30 + 62, 34, { fg: t.text, bg, border: bd, font: "bold 12px 'IBM Plex Mono', monospace" });
+        pill(ctx, `Padre · Luis · ${GENO[v.p2]}`, ox + 26 + 30 + 70, 34, { fg: t.text, bg, border: bd, font: "bold 12px 'IBM Plex Mono', monospace" });
         eye(ctx, ox - 64, oy + S / 2 - 62, 46, pheno(GENO[v.p1]), t);
         ctx.save(); ctx.translate(ox - 64, oy + S / 2 + 34); ctx.rotate(-Math.PI / 2); pill(ctx, `Madre · Ana · ${GENO[v.p1]}`, 0, 0, { fg: t.text, bg, border: bd, font: "bold 12px 'IBM Plex Mono', monospace" }); ctx.restore();
         pill(ctx, "gametos del padre", ox + S / 2, oy - 40, { fg: t.muted, bg, font: "10px 'IBM Plex Mono', monospace" });
         g1.forEach((a, r) => g2.forEach((b, q) => pill(ctx, key(a, b), ox + cell * q + cell / 2, oy + cell * r + cell - 18, { fg: t.text, bg, border: bd, font: "bold 13px 'IBM Plex Mono', monospace" })));
-        pill(ctx, `${n} hijos simulados`, px + pw / 2, 24, { fg: t.text, bg, border: bd, font: "11px 'IBM Plex Mono', monospace" });
-        pill(ctx, `${nBrown} marrón · ${n - nBrown} azul`, px + pw / 2, 48, { fg: t.muted, bg, border: bd, font: "11px 'IBM Plex Mono', monospace" });
+        pill(ctx, `${n} hijos simulados`, px + pw / 2, top - 52, { fg: t.text, bg, border: bd, font: "11px 'IBM Plex Mono', monospace" });
+        pill(ctx, `${nBrown} marrón · ${n - nBrown} azul`, px + pw / 2, top - 28, { fg: t.muted, bg, border: bd, font: "11px 'IBM Plex Mono', monospace" });
       },
       out(v){ const g1 = GENO[v.p1].split(""), g2 = GENO[v.p2].split(""), counts = { BB: 0, Bb: 0, bb: 0 };
         g1.forEach(a => g2.forEach(b => { counts[a === "B" && b === "B" ? "BB" : a === "b" && b === "b" ? "bb" : "Bb"]++; }));
@@ -1660,10 +1662,10 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
 
     { key: "al", sym: "Ál", name: "Álgebra", kicker: "Matrices y transformaciones", title: "Una <span>matriz 2×2</span> deforma el plano.",
       desc: "Las columnas de la matriz son las imágenes de los vectores base. Cambia a, b, c, d y mira cómo se transforma el cuadrado unitario.",
-      formula: "A = | a  b |     det A = ad − bc\n    | c  d |", cap: "Cuadrado unitario → paralelogramo",
+      formula: "A = ⎡ a  b ⎤\n    ⎣ c  d ⎦\ndet A = ad − bc", cap: "Cuadrado unitario → paralelogramo",
       sliders: [{ id: "a", label: "a", min: -2, max: 2, step: 0.1, val: 1.5, unit: "" }, { id: "b", label: "b", min: -2, max: 2, step: 0.1, val: 0.6, unit: "" }, { id: "c", label: "c", min: -2, max: 2, step: 0.1, val: -0.4, unit: "" }, { id: "d", label: "d", min: -2, max: 2, step: 0.1, val: 1.2, unit: "" }],
       draw(ctx, W, H, v, t, c){
-        const m = plotArea(ctx, W, H, -3.2, 3.2, -2.6, 2.6, t, { xl: "x", yl: "y", sx: 1, sy: 1 });
+        const m = plotArea(ctx, W, H, -3.6, 3.6, -3.6, 3.6, t, { xl: "x", yl: "y", sx: 1, sy: 1 });
         const T = ([x, y]) => [v.a * x + v.b * y, v.c * x + v.d * y];
         const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
         ctx.fillStyle = t.line; ctx.globalAlpha = .5; ctx.beginPath(); sq.forEach(([x, y], i) => i ? ctx.lineTo(m.X(x), m.Y(y)) : ctx.moveTo(m.X(x), m.Y(y))); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
@@ -1682,16 +1684,17 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
     const b = document.createElement("button"); b.className = "lab-tab"; b.type = "button"; b.role = "tab"; b.style.setProperty("--c", `var(--c-${L.key})`);
     b.innerHTML = `<b>${L.sym}</b>${L.name}`; b.setAttribute("aria-selected", "false"); b.addEventListener("click", () => openLab(i)); tabs.appendChild(b);
   });
-  function sizeLab(){
-    const box = labCv.parentElement.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
-    const W = Math.max(280, box.width - 44), H = Math.round(W * 0.66);
+  function sizeLab(L){
+    const par = labCv.parentElement, box = par.getBoundingClientRect(), cs = getComputedStyle(par), dpr = Math.min(devicePixelRatio || 1, 2);
+    const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    const W = Math.max(260, Math.floor(box.width - pad)), narrow = W < 520, H = Math.round(W * (narrow ? (L.mobileAspect || 1.08) : 0.66));
     labCv.width = W * dpr; labCv.height = H * dpr; labCv.style.height = H + "px"; lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { W, H };
+    return { W, H, narrow };
   }
   function renderLab(){
     if (cur === null) return;
-    const L = LABS[cur], { W, H } = sizeLab(), t = th(), c = getComputedStyle(root).getPropertyValue(`--c-${L.key}`).trim();
-    lctx.clearRect(0, 0, W, H); L.draw(lctx, W, H, vals, t, c);
+    const L = LABS[cur], { W, H, narrow } = sizeLab(L), t = th(), c = getComputedStyle(root).getPropertyValue(`--c-${L.key}`).trim();
+    lctx.clearRect(0, 0, W, H); L.draw(lctx, W, H, vals, t, c, narrow);
     $("#labOut").innerHTML = L.out(vals);
     $("#labNote").innerHTML = typeof L.note === "function" ? L.note(vals) : L.note;
     cancelAnimationFrame(labRaf);
