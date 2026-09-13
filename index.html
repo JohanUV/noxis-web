@@ -902,13 +902,13 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
           <circle class="c-dot" cx="150" cy="215" r="5"/><text x="150" y="236" text-anchor="middle">Cuenca</text>
           <circle class="c-dot" cx="290" cy="215" r="5"/><text x="290" y="236" text-anchor="middle">Riobamba</text>
           <g class="c-packets">
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="2.6s" repeatCount="indefinite" path="M0,0 L0,-91"/></circle>
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="3.1s" begin="0.4s" repeatCount="indefinite" path="M0,0 L-130,15"/></circle>
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="2.2s" begin="0.9s" repeatCount="indefinite" path="M0,0 L135,10"/></circle>
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="2.9s" begin="1.3s" repeatCount="indefinite" path="M0,0 L-60,90"/></circle>
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="2.4s" begin="1.7s" repeatCount="indefinite" path="M0,0 L80,90"/></circle>
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="2.8s" begin="2.1s" repeatCount="indefinite" path="M0,0 L90,-85"/></circle>
-            <circle class="c-pkt" cx="210" cy="125" r="3.5"><animateMotion dur="3.0s" begin="0.2s" repeatCount="indefinite" path="M0,0 L-90,-85"/></circle>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="2.6" data-begin="0" data-dx="0" data-dy="-91"/>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="3.1" data-begin="0.4" data-dx="-130" data-dy="15"/>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="2.2" data-begin="0.9" data-dx="135" data-dy="10"/>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="2.9" data-begin="1.3" data-dx="-60" data-dy="90"/>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="2.4" data-begin="1.7" data-dx="80" data-dy="90"/>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="2.8" data-begin="2.1" data-dx="90" data-dy="-85"/>
+            <circle class="c-pkt" cx="210" cy="125" r="3.5" data-dur="3.0" data-begin="0.2" data-dx="-90" data-dy="-85"/>
           </g>
         </svg>
         <ul>
@@ -1419,7 +1419,18 @@ footer .wordmark b,footer .wordmark small{color:var(--hero-text)}
       p.style.setProperty("--my", ((e.clientY - r.top) / r.height * 100).toFixed(1) + "%");
     }));
   }
-  if (reduced) $("#coverage").pauseAnimations();
+  /* ---------- Mapa de cobertura: paquetes animados por JS (compatible con iOS) ---------- */
+  const cov = $("#coverage"), pkts = $$(".c-pkt", cov).map(el => ({ el, dur: +el.dataset.dur * 1000, begin: +el.dataset.begin * 1000, dx: +el.dataset.dx, dy: +el.dataset.dy }));
+  let covRaf = null, covVisible = false;
+  function stepCov(now){
+    for (const p of pkts){
+      const k = reduced ? 0.55 : (((now - p.begin) % p.dur) + p.dur) % p.dur / p.dur;
+      p.el.setAttribute("cx", (210 + p.dx * k).toFixed(1)); p.el.setAttribute("cy", (125 + p.dy * k).toFixed(1));
+    }
+    if (!reduced && covVisible) covRaf = requestAnimationFrame(stepCov);
+  }
+  new IntersectionObserver(es => { covVisible = es[0].isIntersecting; cancelAnimationFrame(covRaf); if (covVisible) covRaf = requestAnimationFrame(stepCov); }).observe(cov);
+  stepCov(performance.now());
 
 
   /* ---------- Ejemplos interactivos ---------- */
