@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256">
+  <title>Noxis — ícono</title>
+  <rect width="64" height="64" rx="14" fill="#0F2A3D"/>
+  <path d="M17 16h9l21 32h-9z" fill="#4A8FC4"/>
+  <path d="M38 16h9L36 33l-4.5-6.8z" fill="#F5F8F7"/>
+  <path d="M17 48l11.5-17.5 4.5 6.8L26 48z" fill="#F5F8F7"/>
+</svg>

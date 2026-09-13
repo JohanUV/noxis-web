@@ -1,0 +1,15 @@
+[build]
+  publish = "dist"
+  command = "sh deploy-build.sh"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/logo/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
